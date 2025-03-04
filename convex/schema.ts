@@ -9,16 +9,16 @@ export default defineSchema({
 		// stripeCustomerId: v.string(),
 		// currentSubscriptionId: v.optional(v.id("subscriptions")),
 	})
-		.index("by_clerkId", ["clerkId"])
+		.index("by_clerkId", ["clerkId"]),
 		// .index("by_stripeCustomerId", ["stripeCustomerId"])
 		// .index("by_currentSubscriptionId", ["currentSubscriptionId"]),
 
-	// courses: defineTable({
-	// 	title: v.string(),
-	// 	description: v.string(),
-	// 	imageUrl: v.string(),
-	// 	price: v.number(),
-	// }),
+	courses: defineTable({
+		title: v.string(),
+		description: v.string(),
+		imageUrl: v.string(),
+		price: v.number(),
+	}),
 
 	// purchases: defineTable({
 	// 	userId: v.id("users"),

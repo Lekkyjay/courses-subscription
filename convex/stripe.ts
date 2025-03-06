@@ -23,11 +23,8 @@ export const createCheckoutSession = action({
 		const { success } = await ratelimit.limit(rateLimitKey);
 
 		if (!success) {
-			console.log('Rate limit exceeded')
 			throw new Error(`Rate limit exceeded.`);
-		}
-
-		console.log('Rate limit not exceeded')
+		}		
 
 		const course = await ctx.runQuery(api.courses.getCourseById, { courseId: args.courseId });
 

@@ -22,6 +22,7 @@ export default function PurchaseButton({ courseId }: { courseId: Id<"courses"> }
 		setIsLoading(true);
 		try {
 			const { checkoutUrl } = await createCheckoutSession({ courseId });
+			console.log('checkoutUrl', checkoutUrl);
 			if (checkoutUrl) {
 				window.location.href = checkoutUrl;
 			} 

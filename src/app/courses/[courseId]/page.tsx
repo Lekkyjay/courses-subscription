@@ -22,8 +22,11 @@ export default function CourseDetails() {
 
 	const userAccess = useQuery(api.users.getUserAccess, userData ? {userId: userData._id, courseId} : "skip") || {hasAccess: false};
 
-	// undefined => loading, convex
+  // in convex
+	// courseData undefined => loading
+  // courseData null => not found
 
+  //loading
 	if (!isUserLoaded || courseData === undefined) {
 		return <CourseDetailSkeleton />;
 	}

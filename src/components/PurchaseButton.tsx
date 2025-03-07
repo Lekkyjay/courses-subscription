@@ -16,6 +16,7 @@ export default function PurchaseButton({ courseId }: { courseId: Id<"courses"> }
 	const createCheckoutSession = useAction(api.stripe.createCheckoutSession);
 
 	const userAccess = useQuery(api.users.getUserAccess, userData ? {userId: userData?._id, courseId} : "skip") || {hasAccess: false};
+	console.log('userAccess.....:', userAccess);
 
 	const handlePurchase = async () => {
 		if (!user) return toast.error("Please log in to purchase", { id: "login-error" });
@@ -64,7 +65,4 @@ export default function PurchaseButton({ courseId }: { courseId: Id<"courses"> }
 			</Button>
 		);
 	}
-  return (
-    <div>PurchaseButton</div>
-  )
 }

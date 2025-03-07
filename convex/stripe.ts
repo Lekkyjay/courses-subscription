@@ -87,7 +87,8 @@ export const createProPlanCheckoutSession = action({
 		let priceId;
 		if (args.planId === "month") {
 			priceId = process.env.STRIPE_MONTHLY_PRICE_ID;
-		} else if (args.planId === "year") {
+		} 
+		else if (args.planId === "year") {
 			priceId = process.env.STRIPE_YEARLY_PRICE_ID;
 		}
 

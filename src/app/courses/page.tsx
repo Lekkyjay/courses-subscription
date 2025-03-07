@@ -6,6 +6,7 @@ import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import PurchaseButton from "@/components/PurchaseButton";
 
 export default async function page() {
   const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL as string)
@@ -38,8 +39,7 @@ export default async function page() {
 								${course.price.toFixed(2)}
 							</Badge>
 							<SignedIn>
-                {/* <PurchaseButton courseId={course._id} /> */}
-                PurchaseButton
+                <PurchaseButton courseId={course._id} />
               </SignedIn>
 							<SignedOut>
 								<SignInButton mode='modal'>

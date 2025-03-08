@@ -3,6 +3,9 @@ import stripe from "@/lib/stripe";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
+// import resend from "@/lib/resend";
+// import PurchaseConfirmationEmail from "@/emails/PurchaseConfirmationEmail";
+// import ProPlanActivatedEmail from "@/emails/ProPlanActivatedEmail";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -65,10 +68,29 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 		amount: session.amount_total as number,
 		stripePurchaseId: session.id,
 	});
+
+	// if (
+	// 	session.metadata &&
+	// 	session.metadata.courseTitle &&
+	// 	session.metadata.courseImageUrl &&
+	// 	process.env.NODE_ENV === "development"
+	// ) {
+	// 	await resend.emails.send({
+	// 		from: "MasterClass <onboarding@resend.dev>",
+	// 		to: user.email,
+	// 		subject: "Purchase Confirmed",
+	// 		react: PurchaseConfirmationEmail({
+	// 			customerName: user.name,
+	// 			courseTitle: session.metadata?.courseTitle,
+	// 			courseImage: session.metadata?.courseImageUrl,
+	// 			courseUrl: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${courseId}`,
+	// 			purchaseAmount: session.amount_total! / 100,
+	// 		}),
+	// 	});
+	// }
 }
 
 async function handleSubscriptionUpsert(subscription: Stripe.Subscription, eventType: string) {
-	console.log('subscription........:', subscription);
 	if (subscription.status !== "active" || !subscription.latest_invoice) {
 		console.log(`Skipping subscription ${subscription.id} - Status: ${subscription.status}`);
 		return;
@@ -93,6 +115,22 @@ async function handleSubscriptionUpsert(subscription: Stripe.Subscription, event
 		});
 		console.log(`Successfully processed ${eventType} for subscription ${subscription.id}`);
 
+		// const isCreated = eventType === "customer.subscription.created";
+
+		// if (isCreated && process.env.NODE_ENV === "development") {
+		// 	await resend.emails.send({
+		// 		from: "MasterClass <onboarding@resend.dev>",
+		// 		to: user.email,
+		// 		subject: "Welcome to MasterClass Pro!",
+		// 		react: ProPlanActivatedEmail({
+		// 			name: user.name,
+		// 			planType: subscription.items.data[0].plan.interval,
+		// 			currentPeriodStart: subscription.current_period_start,
+		// 			currentPeriodEnd: subscription.current_period_end,
+		// 			url: process.env.NEXT_PUBLIC_APP_URL!,
+		// 		}),
+		// 	});
+		// }
 	} 
 	catch (error) {
 		console.error(`Error processing ${eventType} for subscription ${subscription.id}:`, error);

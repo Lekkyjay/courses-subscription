@@ -4,11 +4,11 @@ import { Webhook } from "svix";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { api } from "./_generated/api";
 import stripe from '../src/lib/stripe';
+import resend from '../src/config/resend';
 
 const http = httpRouter();
 
 const clerkWebhook = httpAction(async (ctx, request) => {
-	console.log('webhook function ran')
 	const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 	if (!webhookSecret) {
 		throw new Error("Missing CLERK_WEBHOOK_SECRET environment variable");
@@ -60,6 +60,25 @@ const clerkWebhook = httpAction(async (ctx, request) => {
 				clerkId: id,
 				stripeCustomerId: customer.id,
 			});
+
+			const welcomeEmail = `
+				<div>
+					<h1>Hello ${name}, Welcome to MasterClass!</h1>
+					<p>Click the link below to get started: 
+						<br />
+						<a href=${process.env.NEXT_PUBLIC_APP_URL as string}>MasterClass</a>
+					</p>
+				</div>
+			`
+
+			if (process.env.NODE_ENV === "development") {
+				await resend.emails.send({
+					from: "MasterClass <onboarding@resend.dev>",
+					to: email,
+					subject: "Welcome to MasterClass!",
+					html: welcomeEmail
+				})
+			}
 		} 
     catch (error) {
 			console.error("Error creating user in Convex", error);

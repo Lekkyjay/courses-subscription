@@ -120,22 +120,28 @@ async function handleSubscriptionUpsert(subscription: Stripe.Subscription, event
 		});
 		console.log(`Successfully processed ${eventType} for subscription ${subscription.id}`);
 
-		// const isCreated = eventType === "customer.subscription.created";
+		const proPlanActivatedEmail = `
+			<div>
+				<h1>Welcome to MasterClass Pro!</h1>
+				<p>Thank you ${user.name} for subscribing to MasterClass Pro.</p>
+				<p>Plan: ${subscription.items.data[0].plan.interval}</p>
+				<p>Current Period Start: ${subscription.current_period_start}</p>
+				<p>Current Period End: ${subscription.current_period_end}</p>
+				<p>Click the link below to get started: 
+					<br />
+					<a href=${process.env.NEXT_PUBLIC_APP_URL}>MasterClass</a>
+				</p>
+			</div>
+		`
 
-		// if (isCreated && process.env.NODE_ENV === "development") {
-		// 	await resend.emails.send({
-		// 		from: "MasterClass <onboarding@resend.dev>",
-		// 		to: user.email,
-		// 		subject: "Welcome to MasterClass Pro!",
-		// 		react: ProPlanActivatedEmail({
-		// 			name: user.name,
-		// 			planType: subscription.items.data[0].plan.interval,
-		// 			currentPeriodStart: subscription.current_period_start,
-		// 			currentPeriodEnd: subscription.current_period_end,
-		// 			url: process.env.NEXT_PUBLIC_APP_URL!,
-		// 		}),
-		// 	});
-		// }
+		if (process.env.NODE_ENV === "development") {
+			await resend.emails.send({
+				from: "MasterClass <onboarding@resend.dev>",
+				to: user.email,
+				subject: "Welcome to MasterClass Pro!",
+				html: proPlanActivatedEmail
+			});
+		}
 	} 
 	catch (error) {
 		console.error(`Error processing ${eventType} for subscription ${subscription.id}:`, error);

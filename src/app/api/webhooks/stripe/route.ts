@@ -3,9 +3,7 @@ import stripe from "@/lib/stripe";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
-// import resend from "@/lib/resend";
-// import PurchaseConfirmationEmail from "@/emails/PurchaseConfirmationEmail";
-// import ProPlanActivatedEmail from "@/emails/ProPlanActivatedEmail";
+import resend from "@/config/resend";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -69,25 +67,32 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 		stripePurchaseId: session.id,
 	});
 
-	// if (
-	// 	session.metadata &&
-	// 	session.metadata.courseTitle &&
-	// 	session.metadata.courseImageUrl &&
-	// 	process.env.NODE_ENV === "development"
-	// ) {
-	// 	await resend.emails.send({
-	// 		from: "MasterClass <onboarding@resend.dev>",
-	// 		to: user.email,
-	// 		subject: "Purchase Confirmed",
-	// 		react: PurchaseConfirmationEmail({
-	// 			customerName: user.name,
-	// 			courseTitle: session.metadata?.courseTitle,
-	// 			courseImage: session.metadata?.courseImageUrl,
-	// 			courseUrl: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${courseId}`,
-	// 			purchaseAmount: session.amount_total! / 100,
-	// 		}),
-	// 	});
-	// }
+	if (
+		session.metadata &&
+		session.metadata.courseTitle &&
+		session.metadata.courseImageUrl &&
+		process.env.NODE_ENV === "development"
+	) {
+		const purchaseConfirmationEmail = `
+			<div>
+				<h1>Purchase confirmed!</h1>
+				<p>Thank you for your purchase of ${session.metadata.courseTitle}.</p>
+				<img src=${session.metadata.courseImageUrl} alt=${session.metadata.courseTitle} />
+				<p>Amount: ${session.amount_total! / 100}</p>
+				<p>Click the link below to get started: 
+					<br />
+					<a href=${process.env.NEXT_PUBLIC_APP_URL}/courses/${courseId}>MasterClass</a>
+				</p>
+			</div>
+		`
+
+		await resend.emails.send({
+			from: "MasterClass <onboarding@resend.dev>",
+			to: user.email,
+			subject: "Purchase Confirmed",
+			html: purchaseConfirmationEmail
+		});
+	}
 }
 
 async function handleSubscriptionUpsert(subscription: Stripe.Subscription, eventType: string) {

@@ -5,8 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Clock, Rocket, Star } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 export default function page() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<Success />
+		</Suspense>
+	);
+}
+
+function Success() {
   const router = useRouter();
 	const searchParams = useSearchParams();
 	const isYearly = searchParams.get("year") === "true";
